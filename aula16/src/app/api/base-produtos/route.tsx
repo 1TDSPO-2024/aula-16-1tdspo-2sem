@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { promises as fs} from "fs";
+import { TipoProduto } from "@/types";
 
 export async function GET() {
 
@@ -10,3 +11,25 @@ export async function GET() {
     return NextResponse.json(dados);
 }
 
+export async  function POST(request:Request){
+    
+
+    const body:TipoProduto = await request.json();
+
+    const file = await fs.readFile(process.cwd() + "/src/data/base.json" ,"utf-8");
+
+    const dados = JSON.parse(file);
+    const newId = dados[dados.lenght() -1].id + 1;
+
+    body.id = newId;
+
+    dados.push(body);
+
+    //Receber o mesmo objeto que é tratado em GetById
+    console.log(body);
+
+    await fs.writeFile(process.cwd()+"/src/data/base.json",JSON.stringify(dados))
+
+    return NextResponse.json(body);
+
+}
